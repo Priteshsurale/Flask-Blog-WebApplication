@@ -1,2 +1,5 @@
 # pycache ignore
 __pycache__/
+
+# Folder
+temp/
