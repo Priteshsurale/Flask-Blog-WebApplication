@@ -1,5 +1,6 @@
 import os
 import secrets
+from flaskblog import app
 from PIL import Image
 
 def save_picture(form_picture):
