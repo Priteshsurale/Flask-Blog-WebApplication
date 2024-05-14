@@ -1,7 +1,11 @@
+import os 
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
+from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager # mange user session
+from flask_sqlalchemy import SQLAlchemy
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -14,5 +18,14 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app) # we add some functionality to database models and then it will handle all of the session in the background
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
+app.config['MAIL_SERVER'] = 'smtp.mail.yahoo.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['ACCOUNT_EMAIL_VERIFICATION'] = 'none'
 
-from flaskblog import routes
+app.config['MAIL_USERNAME'] = os.environ.get('GMAIL_ID')
+app.config['MAIL_PASSWORD'] = os.environ.get('GMAIL_PASS')
+# print(os.environ.get('GMAIL_ID'),os.environ.get('GMAIL_PASS'))
+mail = Mail(app)
+
+from flaskblog import routes 
