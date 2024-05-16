@@ -5,3 +5,6 @@ __pycache__/
 temp/
 tem.*
 .env
+
+profile_pics/
+instance/

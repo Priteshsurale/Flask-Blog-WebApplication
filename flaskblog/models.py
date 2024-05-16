@@ -1,7 +1,8 @@
 import jwt
+from flask import current_app
 from datetime import datetime,timedelta
 from flask_login import UserMixin
-from flaskblog import db, login_manager, app
+from flaskblog import db, login_manager
 
 # this keeps the current user object loaded in the current session based on the store id
 @login_manager.user_loader
@@ -18,12 +19,12 @@ class User(db.Model, UserMixin):
   
   def get_reset_token(self, expires_min=30):
     payload = {'user_id': self.id, 'exp':datetime.now() + timedelta(minutes=expires_min)}
-    return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+    return jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
   
   @staticmethod
   def verify_reset_token(token):
     try:
-      payload = jwt.decode(token,app.config['SECRET_KEY'], algorithms=['HS256'])
+      payload = jwt.decode(token,current_app.config['SECRET_KEY'], algorithms=['HS256'])
       user_id = payload.get('user_id')
       print('user_id:',user_id)
     except:
@@ -43,6 +44,3 @@ class Post(db.Model):
   
   def __repr__(self):
     return f"Post('{self.title}','{self.date_posted}')"
-
-# stateful protocol stores everything in backend
-# stateless protocol stores everything in client side

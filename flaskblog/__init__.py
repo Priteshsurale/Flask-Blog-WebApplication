@@ -1,31 +1,36 @@
-import os 
 from flask import Flask
 from flask_mail import Mail
-from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt
+from flaskblog.config import Config
 from flask_login import LoginManager # mange user session
 from flask_sqlalchemy import SQLAlchemy
-load_dotenv()
 
-app = Flask(__name__)
 
-# secret key protect against modifying cookies and cross site request forgery(csrf) attacks.
-app.config['SECRET_KEY'] = '0b134aeac20f8b7faa9b88a2087030f5' 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-
-db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
-login_manager = LoginManager(app) # we add some functionality to database models and then it will handle all of the session in the background
-login_manager.login_view = 'login'
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+mail = Mail()
+login_manager = LoginManager() # we add some functionality to database models and then it will handle all of the session in the background
+login_manager.login_view = 'users.login'
 login_manager.login_message_category = 'info'
-app.config['MAIL_SERVER'] = 'smtp.mail.yahoo.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['ACCOUNT_EMAIL_VERIFICATION'] = 'none'
 
-app.config['MAIL_USERNAME'] = os.environ.get('GMAIL_ID')
-app.config['MAIL_PASSWORD'] = os.environ.get('GMAIL_PASS')
-# print(os.environ.get('GMAIL_ID'),os.environ.get('GMAIL_PASS'))
-mail = Mail(app)
+# CREATING APP WITH CONFIGURATION
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+     
+    db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    mail.init_app(app)
+    
+    from flaskblog.main.routes import main
+    from flaskblog.posts.routes import posts
+    from flaskblog.users.routes import users
+    from flaskblog.errors.handlers import errors
+    
+    app.register_blueprint(users)
+    app.register_blueprint(posts)
+    app.register_blueprint(main)
+    app.register_blueprint(errors)
 
-from flaskblog import routes 
+    return app
