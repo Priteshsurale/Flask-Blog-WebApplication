@@ -50,7 +50,6 @@ class UpdateAccountForm(FlaskForm):
                 raise ValidationError("That email is taken, Please choose different one!")
 
 
-
 class RequestResetForm(FlaskForm):
     email = StringField('Email',validators=[DataRequired(),Email()])
     submit = SubmitField('Request Password Reset')
@@ -59,6 +58,7 @@ class RequestResetForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is None:
             raise ValidationError("There is not account with the email. You must register first.")  
+    
     
 class ResetPasswordForm(FlaskForm):
     password = PasswordField('Password',validators=[DataRequired()])
